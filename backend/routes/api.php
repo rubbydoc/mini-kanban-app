@@ -20,6 +20,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('/', [TaskController::class, 'store']);
         Route::put('/{task}', [TaskController::class, 'update']);
         Route::delete('/{task}', [TaskController::class, 'destroy']);
+        Route::get('/all', [TaskController::class, 'getAllTasks']);
     });
 });
 

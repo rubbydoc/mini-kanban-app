@@ -19,6 +19,11 @@ class TaskController extends Controller
         return response()->json(Task::where('user_id', Auth::id())->get());
     }
 
+    public function getAllTasks()
+    {
+        return response()->json(Task::all());
+    }
+
     public function store(Request $request)
     {
         $validatedData = $request->validate([
