@@ -1,18 +1,16 @@
-/**
- * This script sets up a WebSocket server using the 'ws' library.
- * The server listens on port 8080 and handles client connections.
- * 
- * When a client connects, a message is logged to the console.
- * The server listens for messages from the client and echoes them back with a prefix.
- * When a client disconnects, a message is logged to the console.
- * 
- * The server runs on ws://localhost:8080.
- */
+
 const WebSocket = require('ws');
+const express = require('express');
+const http = require('http');
+const socketIo = require('socket.io');
 
-const server = new WebSocket.Server({ port: 8080 });
+const app = express();
+const server = http.createServer(app);
+const io = socketIo(server, { cors: { origin: '*' } });
 
-server.on('connection', (ws) => {
+const wsServer = new WebSocket.Server({ port: 8080 });
+
+wsServer.on('connection', (ws) => {
     console.log('Client connected');
 
     ws.on('message', (message) => {
@@ -25,6 +23,18 @@ server.on('connection', (ws) => {
         console.log('Client disconnected');
     });
 });
+
+io.on('connection', (socket) => {
+    console.log('New client connected');
+
+    socket.on('taskUpdated', (task) => {
+        io.emit('taskUpdated', task);
+    });
+
+    socket.on('disconnect', () => console.log('Client disconnected'));
+});
+
+server.listen(4000, () => console.log('Real-time server running on port 4000'));
 
 console.log('WebSocket server is running on ws://localhost:8080');
 
