@@ -59,7 +59,7 @@ const addTask = async (column) => {
       <div 
         v-for="column in columns" 
         :key="column" 
-        class="flex flex-col flex-1 min-h-0 p-4 bg-gray-100 rounded-lg shadow"
+        class="flex flex-col flex-1 min-h-0 p-4 bg-gray-100 rounded-lg shadow w-96"
       >
         <h2 class="mb-3 text-lg font-bold text-gray-700">
           {{ columnNames[column] }}
@@ -103,4 +103,6 @@ html, body, #app {
 .flex-1 {
   min-height: 0;
 }
+
+
 </style>
