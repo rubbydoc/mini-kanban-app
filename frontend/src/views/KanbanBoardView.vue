@@ -2,11 +2,12 @@
 import { useTaskStore } from "@/stores/tasks";
 import TaskCard from "@/components/TaskCard.vue";
 import { storeToRefs } from "pinia";
-import { ref, onMounted } from "vue";
+import { ref, onMounted, computed } from "vue";
 
 const taskStore = useTaskStore();
-const { tasks } = storeToRefs(taskStore);
+const { tasks } = storeToRefs(taskStore); // Reactive tasks from store
 
+// **Ensure consistency in keys**
 const columns = ["todo", "in_progress", "done"];
 const columnNames = {
   todo: "To Do",
@@ -14,44 +15,89 @@ const columnNames = {
   done: "Done",
 };
 
-// Fetch tasks from API on component mount
-onMounted(() => {
-  taskStore.fetchTasks();
+// **Computed property to filter tasks by status**
+const tasksByStatus = computed(() => {
+  return {
+    todo: tasks.value.filter((task) => task.status === "todo"),
+    in_progress: tasks.value.filter((task) => task.status === "in_progress"),
+    done: tasks.value.filter((task) => task.status === "done"),
+  };
 });
 
-const newTaskTitle = ref("");
-const addTask = (column) => {
-  if (newTaskTitle.value.trim() !== "") {
-    taskStore.addTask(newTaskTitle.value, column);
-    newTaskTitle.value = "";
+// Fetch tasks when the component is mounted
+onMounted(async () => {
+  try {
+    await taskStore.fetchTasks();
+    console.log("Tasks fetched:", JSON.stringify(tasks.value, null, 2));
+  } catch (error) {
+    console.error("Error fetching tasks:", error);
+  }
+});
+
+// **Fix: Use an object to store task titles per column**
+const newTaskTitle = ref({
+  todo: "",
+  in_progress: "",
+  done: "",
+});
+
+// **Fix: Ensure tasks are added to the correct status**
+const addTask = async (column) => {
+  if (newTaskTitle.value[column].trim() !== "") {
+    await taskStore.addTask(newTaskTitle.value[column], column);
+    newTaskTitle.value[column] = ""; // Clear input after adding
   }
 };
 </script>
 
 <template>
-  <div class="flex gap-4 p-5 overflow-x-auto">
-    <div v-for="column in columns" :key="column" class="p-4 bg-gray-100 rounded-lg shadow w-80">
-      <h2 class="mb-3 text-lg font-bold text-gray-700">{{ columnNames[column] }}</h2>
+  <div class="flex flex-col h-screen p-5 bg-gray-50">
+    <div class="flex justify-between mb-4">
+      <h1 class="text-2xl font-bold text-gray-700">Kanban Board</h1>
+      <button class="px-4 py-2 text-white bg-blue-500 rounded hover:bg-blue-600">Add New Task</button>
+    </div>
+    <div class="flex flex-1 gap-4 overflow-x-auto">
+      <div 
+        v-for="column in columns" 
+        :key="column" 
+        class="flex flex-col flex-1 p-4 bg-gray-100 rounded-lg shadow"
+      >
+        <h2 class="mb-3 text-lg font-bold text-gray-700">
+          {{ columnNames[column] }}
+        </h2>
 
-      <!-- Task Cards -->
-      <div class="space-y-3">
-        <TaskCard v-for="task in tasks.filter(t => t.column === column)" :key="task.id" :task="task" />
-      </div>
+        <!-- Task Cards -->
+        <div class="flex-1 space-y-3 overflow-y-auto">
+          <TaskCard 
+            v-for="task in tasksByStatus[column]" 
+            :key="task.id" 
+            :task="task" 
+          />
+        </div>
 
-      <!-- Add Task -->
-      <div class="mt-3">
-        <input 
-          v-model="newTaskTitle" 
-          placeholder="Enter task name..." 
-          class="w-full p-2 text-sm border border-gray-300 rounded" 
-          @keyup.enter="addTask(column)" 
-        />
-        <button 
-          class="w-full py-2 mt-2 text-white bg-blue-500 rounded hover:bg-blue-600"
-          @click="addTask(column)">
-          + Add a card
-        </button>
+        <!-- Add Task -->
+        <div class="mt-3">
+          <input 
+            v-model="newTaskTitle[column]" 
+            placeholder="Enter task name..." 
+            class="w-full p-2 text-sm border border-gray-300 rounded" 
+            @keyup.enter="addTask(column)" 
+          />
+          <button 
+            class="w-full py-2 mt-2 text-white bg-blue-500 rounded hover:bg-blue-600"
+            @click="addTask(column)"
+          >
+            + Add a card
+          </button>
+        </div>
       </div>
     </div>
   </div>
 </template>
+
+<style scoped>
+html, body, #app {
+  height: 100%;
+  margin: 0;
+}
+</style>
