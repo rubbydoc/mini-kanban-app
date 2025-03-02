@@ -54,13 +54,12 @@ const addTask = async (column) => {
   <div class="flex flex-col h-screen p-5 bg-gray-50">
     <div class="flex justify-between mb-4">
       <h1 class="text-2xl font-bold text-gray-700">Kanban Board</h1>
-      <button class="px-4 py-2 text-white bg-blue-500 rounded hover:bg-blue-600">Add New Task</button>
     </div>
     <div class="flex flex-1 gap-4 overflow-x-auto">
       <div 
         v-for="column in columns" 
         :key="column" 
-        class="flex flex-col flex-1 p-4 bg-gray-100 rounded-lg shadow"
+        class="flex flex-col flex-1 min-h-0 p-4 bg-gray-100 rounded-lg shadow"
       >
         <h2 class="mb-3 text-lg font-bold text-gray-700">
           {{ columnNames[column] }}
@@ -79,13 +78,13 @@ const addTask = async (column) => {
         <div class="mt-3">
           <input 
             v-model="newTaskTitle[column]" 
-            placeholder="Enter task name..." 
+            placeholder="Enter a title..." 
             class="w-full p-2 text-sm border border-gray-300 rounded" 
             @keyup.enter="addTask(column)" 
           />
           <button 
             class="w-full py-2 mt-2 text-white bg-blue-500 rounded hover:bg-blue-600"
-            @click="addTask(column)"
+            @click="() => addTask(column)"
           >
             + Add a card
           </button>
@@ -99,5 +98,9 @@ const addTask = async (column) => {
 html, body, #app {
   height: 100%;
   margin: 0;
+}
+
+.flex-1 {
+  min-height: 0;
 }
 </style>

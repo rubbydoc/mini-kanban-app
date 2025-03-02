@@ -26,15 +26,21 @@ class TaskController extends Controller
 
     public function store(Request $request)
     {
+        
+    
+        if (!Auth::check()) {
+            return response()->json(['error' => 'Unauthorized'], 401);
+        }
+    
         $validatedData = $request->validate([
             'title' => 'required|string|max:255',
             'description' => 'nullable|string',
-            'status' => 'required|string|in:todo,in-progress,done',
+            'status' => 'required|string|in:todo,in_progress,done',
         ]);
-
+    
         $validatedData['user_id'] = Auth::id();
         $task = Task::create($validatedData);
-
+    
         return response()->json($task, 201);
     }
 
