@@ -1,8 +1,8 @@
 <script setup>
-import { useTaskStore } from "@/stores/TaskStore";
+import { useTaskStore } from "@/stores/tasks";
 import TaskCard from "@/components/TaskCard.vue";
 import { storeToRefs } from "pinia";
-import { ref } from "vue";
+import { ref, onMounted } from "vue";
 
 const taskStore = useTaskStore();
 const { tasks } = storeToRefs(taskStore);
@@ -14,7 +14,11 @@ const columnNames = {
   done: "Done",
 };
 
-// Handles adding a new task
+// Fetch tasks from API on component mount
+onMounted(() => {
+  taskStore.fetchTasks();
+});
+
 const newTaskTitle = ref("");
 const addTask = (column) => {
   if (newTaskTitle.value.trim() !== "") {
