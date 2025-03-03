@@ -112,11 +112,11 @@ const logout = async () => {
 </script>
 
 <template>
-  <div class="flex flex-col h-screen p-5 bg-gray-50">
+  <div class="flex flex-col h-screen p-5 bg-gradient-to-r from-blue-500 to-purple-600">
     <div class="flex justify-between mb-4">
-      <h1 class="text-2xl font-bold text-gray-700">Mini Kanban Board</h1>
+      <h1 class="text-2xl font-bold text-gray-100">Mini Kanban Board</h1>
       <div class="flex items-center space-x-4">
-        <span>Hi {{ userName }}!</span>
+        <span class="text-gray-100">Hi {{ userName }}!</span>
         <button 
           class="px-4 py-2 text-white bg-red-500 rounded cursor-pointer hover:bg-red-600"
           @click="logout"
@@ -129,7 +129,7 @@ const logout = async () => {
       <div 
         v-for="column in columns" 
         :key="column" 
-        class="flex flex-col flex-1 min-h-0 p-4 bg-gray-100 rounded-lg shadow w-96"
+        class="flex flex-col flex-1 min-h-0 p-4 bg-white rounded-lg shadow bg-opacity-80 w-96"
       >
         <h2 class="mb-3 text-lg font-bold text-gray-700">
           {{ columnNames[column] }}
