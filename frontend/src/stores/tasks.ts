@@ -32,12 +32,49 @@ export const useTaskStore = defineStore("task", {
 
     async updateTask(id: number, title: string, description: string, status: string) {
       try {
-        await api.put(`/tasks/${id}`, { title, description, status });
-        this.fetchTasks();
+        const response = await api.put(`/tasks/${id}`, { title, description, status });
+        const updatedTask = response.data;
+        console.log("Updated task:", updatedTask);
+    
+        // Find the index of the task in the store
+        const index = this.tasks.findIndex(task => task.id === id);
+    
+        if (index !== -1) {
+          this.tasks[index] = { ...this.tasks[index], ...updatedTask }; // Ensure reactivity
+          this.tasks = [...this.tasks]; // Trigger reactivity by assigning a new array
+        } else {
+          console.warn(`Task with ID ${id} not found in the store.`);
+        }
+        return updatedTask;
+    
       } catch (error) {
         console.error("Failed to update task:", error);
+        throw error; // Rethrow so the caller can handle it
       }
     },
+
+    async moveTask(id: number, newStatus: string) {
+      try {
+      const response = await api.patch(`/tasks/${id}/move`, { status: newStatus });
+      const updatedTask = response.data;
+
+      // Find the index of the task in the store
+      const index = this.tasks.findIndex(task => task.id === id);
+
+      if (index !== -1) {
+        this.tasks[index].status = newStatus; // Update the status of the task
+        this.tasks = [...this.tasks]; // Trigger reactivity by assigning a new array
+      } else {
+        console.warn(`Task with ID ${id} not found in the store.`);
+      }
+      return updatedTask;
+
+      } catch (error) {
+      console.error("Failed to move task:", error);
+      throw error; // Rethrow so the caller can handle it
+      }
+    },
+    
 
     async deleteTask(id: number) {
       try {

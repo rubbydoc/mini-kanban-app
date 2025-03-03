@@ -21,6 +21,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::put('/{task}', [TaskController::class, 'update']);
         Route::delete('/{task}', [TaskController::class, 'destroy']);
         Route::get('/all', [TaskController::class, 'getAllTasks']);
+        Route::patch('/{task}/move', [TaskController::class, 'move']);
     });
 });
 

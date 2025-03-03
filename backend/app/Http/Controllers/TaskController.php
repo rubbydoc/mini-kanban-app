@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use App\Models\Task;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 
 class TaskController extends Controller
 {
@@ -45,19 +46,30 @@ class TaskController extends Controller
     }
 
     public function update(Request $request, $id)
-    {
-        $task = Task::where('user_id', Auth::id())->findOrFail($id);
+{
+    $task = Task::where('user_id', Auth::id())->findOrFail($id);
 
-        $validatedData = $request->validate([
-            'title' => 'sometimes|required|string|max:255',
-            'description' => 'nullable|string',
-            'status' => 'sometimes|required|string|in:todo,in-progress,done',
-        ]);
+    Log::info('Update Task Request:', $request->all()); // Debugging
 
-        $task->update($validatedData);
+    $validatedData = $request->validate([
+        'title' => 'sometimes|required|string|max:255',
+        'description' => 'nullable|string',
+        'status' => 'sometimes|required|string|in:todo,in_progress,done',
+    ]);
 
-        return response()->json($task);
+    // 🔹 Ensure 'status' exists before modifying it
+    if (isset($validatedData['status'])) {
+        $validatedData['status'] = str_replace('-', '_', $validatedData['status']); 
     }
+
+    Log::info('Before update:', $task->toArray());
+    $task->update($validatedData);
+    Log::info('After update:', $task->toArray());
+
+    return response()->json($task);
+}
+
+    
 
     public function destroy($id)
     {
@@ -65,5 +77,19 @@ class TaskController extends Controller
         $task->delete();
 
         return response()->json(null, 204);
+    }
+
+    public function move(Request $request, $id)
+    {
+        $task = Task::where('user_id', Auth::id())->findOrFail($id);
+
+        $validatedData = $request->validate([
+            'status' => 'required|string|in:todo,in_progress,done',
+        ]);
+
+        $task->status = $validatedData['status'];
+        $task->save();
+
+        return response()->json($task);
     }
 }
