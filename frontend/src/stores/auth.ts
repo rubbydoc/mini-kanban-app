@@ -21,13 +21,24 @@ export const useAuthStore = defineStore("auth", {
 
         async logout() {
             try {
-                await api.post("/logout", {}, { headers: { Authorization: `Bearer ${this.token}` } });
-                localStorage.removeItem("token");
-                this.token = "";
+            await api.post("/logout", {}, { headers: { Authorization: `Bearer ${this.token}` } });
+            localStorage.removeItem("token");
+            this.token = "";
+            window.location.href = "/login"; // Redirect to login page
             } catch (error) {
-                console.error("Logout failed:", error);
-                throw new Error("Logout failed");
+            console.error("Logout failed:", error);
+            throw new Error("Logout failed");
             }
         },
+
+        async fetchUserData() {
+            try {
+            const response = await api.get("/user", { headers: { Authorization: `Bearer ${this.token}` } });
+            this.user = response.data;
+            } catch (error) {
+            console.error("Fetching user data failed:", error);
+            throw new Error("Fetching user data failed");
+            }
+        }
     },
 });

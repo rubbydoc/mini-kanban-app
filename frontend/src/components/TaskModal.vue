@@ -62,13 +62,8 @@
         </div>
       </div>
 
-      <div class="mt-4">
-        <label for="comment" class="block mb-2 text-sm font-medium text-gray-700">Comment</label>
-        <textarea id="comment" rows="4" class="w-full p-2 border border-gray-300 rounded"></textarea>
-      </div>
-      <div class="flex justify-end mt-4">
-        <button @click="$emit('close')" class="px-4 py-2 text-white bg-blue-500 rounded cursor-pointer hover:bg-blue-600">Close</button>
-      </div>
+
+    
     </div>
   </div>
 </template>

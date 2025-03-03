@@ -13,7 +13,7 @@
                     <input type="password" v-model="password" required class="w-full px-3 py-2 mt-1 border rounded-md focus:outline-none focus:ring focus:ring-blue-300" />
                     <p v-if="errors.password" class="text-sm text-red-500">{{ errors.password }}</p>
                 </div>
-                <button type="submit" class="w-full px-4 py-2 font-bold text-white bg-blue-500 rounded-md hover:bg-blue-600 focus:outline-none focus:ring focus:ring-blue-300">Login</button>
+                <button type="submit" class="w-full px-4 py-2 font-bold text-white bg-blue-500 rounded-md cursor-pointer hover:bg-blue-600 focus:outline-none focus:ring focus:ring-blue-300">Login</button>
                 <p v-if="errors.general" class="text-sm text-center text-red-500">{{ errors.general }}</p>
             </form>
         </div>
@@ -47,13 +47,13 @@ export default {
                     const authStore = useAuthStore();
                     await authStore.login(this.email, this.password);
                     console.log('Login successful');
-                    this.$router.push('/home');
+                    this.$router.push('/');
                     // Handle successful login here
                 } catch (error) {
                     if (error.response && error.response.data) {
                         this.errors.general = error.response.data.message || 'Invalid email or password.';
                     } else {
-                        this.errors.general = 'An error occurred. Please try again.';
+                        this.errors.general = 'The provided credentials are invalid.';
                     }
                 }
             }

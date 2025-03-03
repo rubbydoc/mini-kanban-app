@@ -4,6 +4,7 @@ import TaskCard from "@/components/TaskCard.vue";
 import { storeToRefs } from "pinia";
 import { ref, onMounted, computed, watch } from "vue";
 import draggable from "vuedraggable";
+import { useAuthStore } from "@/stores/auth";
 
 const taskStore = useTaskStore();
 const { tasks } = storeToRefs(taskStore);
@@ -79,15 +80,50 @@ const onTaskDrop = async (event) => {
   }
 };
 
+const userName = ref("");
 
+const fetchUserName = async () => {
+  try {
+    const authStore = useAuthStore();
+    await authStore.fetchUserData(); // Fetch user data and store it in Pinia
+    
+    // Assuming the user data is stored in `authStore.user`
+    userName.value = authStore.user?.name || "Guest"; 
+  } catch (error) {
+    console.error("Error fetching user name:", error);
+  }
+};
 
+onMounted(() => {
+  fetchUserName();
+});
 
+const logout = async () => {
+  try {
+    const authStore = useAuthStore();
+    await authStore.logout(); // Call the logout action in the auth store
+    userName.value = ""; // Clear the user name
+    // Optionally, redirect to the login page or home page
+    // router.push({ name: 'login' });
+  } catch (error) {
+    console.error("Error logging out:", error);
+  }
+};
 </script>
 
 <template>
   <div class="flex flex-col h-screen p-5 bg-gray-50">
     <div class="flex justify-between mb-4">
       <h1 class="text-2xl font-bold text-gray-700">Mini Kanban Board</h1>
+      <div class="flex items-center space-x-4">
+        <span>Hi {{ userName }}</span>
+        <button 
+          class="px-4 py-2 text-white bg-red-500 rounded cursor-pointer hover:bg-red-600"
+          @click="logout"
+        >
+          Logout
+        </button>
+      </div>
     </div>
     <div class="flex flex-1 gap-4 overflow-x-auto">
       <div 
