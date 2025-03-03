@@ -30,8 +30,9 @@ watch(
       done: newTasks.filter((task) => task.status === "done"),
     };
   },
-  { immediate: true }
+  { deep: true, immediate: true }
 );
+
 
 onMounted(async () => {
   try {
@@ -111,7 +112,7 @@ const onTaskDrop = async (event) => {
   </template>
 </draggable>
 
-        <div class="mt-3">
+<div class="mt-3">
           <input 
             v-model="newTaskTitle[column]" 
             placeholder="Enter a title..." 

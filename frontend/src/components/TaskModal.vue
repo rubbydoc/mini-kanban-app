@@ -1,15 +1,25 @@
 <template>
   <div class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
     <div class="w-full max-w-lg p-6 bg-white rounded-lg shadow-lg">
-      <div class="flex justify-between mb-4">
-        <h2 class="text-xl font-bold">{{ task.title }}</h2>
-        <button @click="$emit('close')" class="text-gray-500 cursor-pointer hover:text-gray-700">
+      <div class="flex justify-end mb-4">
+      
+        <button @click="$emit('close')" class="text-gray-500 cursor-pointer hover:text-gray-700 ">
           <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
           </svg>
         </button>
+        
       </div>
       <div class="mb-4">
+        <label for="title" class="block mb-2 text-sm font-medium text-gray-700">Title</label>
+
+        <input 
+          type="text" 
+          class="w-full p-2 mb-2 text-xl font-bold border border-gray-300 rounded" 
+          v-model="editedTitle" 
+          :readonly="!isEditing" 
+          :class="{ 'bg-gray-100': !isEditing }"
+        />
         <label for="description" class="block mb-2 text-sm font-medium text-gray-700">Description</label>
         <textarea 
           id="description" 
@@ -44,7 +54,7 @@
           </button>
           <button 
             v-if="isEditing" 
-            @click="saveDescription" 
+            @click="saveTask" 
             class="px-4 py-2 text-white bg-green-500 rounded cursor-pointer hover:bg-green-600"
           >
             Save
@@ -52,7 +62,6 @@
         </div>
       </div>
 
-      <p><strong>User:</strong> {{ userName }}</p>
       <div class="mt-4">
         <label for="comment" class="block mb-2 text-sm font-medium text-gray-700">Comment</label>
         <textarea id="comment" rows="4" class="w-full p-2 border border-gray-300 rounded"></textarea>
@@ -78,6 +87,7 @@ const props = defineProps({
 
 const taskStore = useTaskStore();
 const isEditing = ref(false);
+const editedTitle = ref(props.task.title);
 const editedDescription = ref(props.task.description);
 const editedStatus = ref(props.task.status);
 const userName = ref("");
@@ -91,18 +101,18 @@ const fetchUserName = async () => {
   }
 };
 
-const saveDescription = async () => {
+const saveTask = async () => {
   try {
-    await taskStore.updateTask(props.task.id, props.task.title, editedDescription.value, editedStatus.value);
+    await taskStore.updateTask(props.task.id, editedTitle.value, editedDescription.value, editedStatus.value);
     isEditing.value = false;
   } catch (error) {
-    console.error("Error saving description:", error);
+    console.error("Error saving task:", error);
   }
 };
 
 const saveStatus = async () => {
   try {
-    await taskStore.updateTask(props.task.id, props.task.title, editedDescription.value, editedStatus.value);
+    await taskStore.updateTask(props.task.id, editedTitle.value, editedDescription.value, editedStatus.value);
   } catch (error) {
     console.error("Error saving status:", error);
   }
